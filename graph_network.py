@@ -69,7 +69,7 @@ class EncodeProcessDecode(nn.Module):
         self.node_encoder = build_mlp_with_layer_norm(self._node_input_size)
         self.edge_encoder = build_mlp_with_layer_norm(self._edge_input_size)
 
-        self._processor_networks = []
+        self._processor_networks = nn.ModuleList()
         for _ in range(self._num_message_passing_steps):
             if self.args.gnn_type == 'gcn':
                 self._processor_networks.append(GCN(self._latent_size, self.args.hidden_channels,
