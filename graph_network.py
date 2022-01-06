@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch_scatter import scatter
 from dataloader import NCDataset
 from models import GCN, GAT
-
+from interation_net import EdgeModel, NodeModel, MetaLayer
 class MLP(nn.Module):
     def __init__(self, input_size, hidden_size, num_hidden_layers, output_size):
         super(MLP, self).__init__()
@@ -71,6 +71,7 @@ class EncodeProcessDecode(nn.Module):
 
         self._processor_networks = nn.ModuleList()
         for _ in range(self._num_message_passing_steps):
+            
             if self.args.gnn_type == 'gcn':
                 self._processor_networks.append(GCN(self._latent_size, self.args.hidden_channels,
                                                     self._latent_size, self.args.num_gnn_layers,
@@ -80,6 +81,12 @@ class EncodeProcessDecode(nn.Module):
                                                     self._latent_size, self.args.num_gnn_layers,
                                                     self.args.dropout, self.args.use_bn,
                                                     self.args.gat_heads, self.args.out_heads).to(self.device))
+            elif self.args.gnn_type == 'interaction_net':
+                self._processor_networks.append(
+                                        MetaLayer(
+                                            edge_model=EdgeModel(build_mlp_with_layer_norm(input_size=self._latent_size*3)),
+                                            node_model=NodeModel(build_mlp_with_layer_norm(input_size=self._latent_size*2)),
+                                            global_model=None).to(self.device))
             else:
                 raise ValueError("Not recognized GNN model!")
 
@@ -121,16 +128,28 @@ class EncodeProcessDecode(nn.Module):
         return latent_graph_m
 
     def _process_step(self, processor_network_k, latent_graph_prev_k):
-        new_node_feature = processor_network_k(latent_graph_prev_k)
-        latent_graph_k = NCDataset('latent_graph_k')
-        latent_graph_k.graph = {
-            'node_feat': latent_graph_prev_k.graph['node_feat'] + new_node_feature,
-            'edge_feat': None,
-            'global': None,
-            'n_node': latent_graph_prev_k.graph['n_node'],
-            'n_edge': latent_graph_prev_k.graph['n_edge'],
-            'edge_index': latent_graph_prev_k.graph['edge_index']
-        }
+        if self.args.gnn_type == 'interaction_net':
+            new_node_feature, new_edge_feature = processor_network_k(latent_graph_prev_k.graph)
+            latent_graph_k = NCDataset('latent_graph_k')
+            latent_graph_k.graph = {
+                'node_feat': latent_graph_prev_k.graph['node_feat'] + new_node_feature,
+                'edge_feat': latent_graph_prev_k.graph['edge_feat'] + new_edge_feature,
+                'global': None,
+                'n_node': latent_graph_prev_k.graph['n_node'],
+                'n_edge': latent_graph_prev_k.graph['n_edge'],
+                'edge_index': latent_graph_prev_k.graph['edge_index']
+            }
+        else:
+            new_node_feature = processor_network_k(latent_graph_prev_k)
+            latent_graph_k = NCDataset('latent_graph_k')
+            latent_graph_k.graph = {
+                'node_feat': latent_graph_prev_k.graph['node_feat'] + new_node_feature,
+                'edge_feat': None,
+                'global': None,
+                'n_node': latent_graph_prev_k.graph['n_node'],
+                'n_edge': latent_graph_prev_k.graph['n_edge'],
+                'edge_index': latent_graph_prev_k.graph['edge_index']
+            }
 
         return latent_graph_k
 

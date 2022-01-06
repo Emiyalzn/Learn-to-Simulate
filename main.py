@@ -302,7 +302,7 @@ def parse_arguments():
     parser.add_argument('--noise_std', default=0.0003, type=float, help='The std deviation of the noise.')
     parser.add_argument('--model_path', default="model", type=str, help='The path for saving checkpoints of the model.')
     parser.add_argument('--output_path', default="rollouts", type=str, help='The path for saving outputs (e.g. rollouts).')
-    parser.add_argument('--gnn_type', default='gcn', choices=['gcn', 'gat', 'trans_gnn'], help='The GNN to be used as processor.')
+    parser.add_argument('--gnn_type', default='gcn', choices=['gcn', 'gat', 'trans_gnn', 'interaction_net'], help='The GNN to be used as processor.')
     parser.add_argument('--message_passing_steps', default=10, type=int, help='number of GNN message passing steps.')
 
     # GNN settings
@@ -332,7 +332,7 @@ def parse_arguments():
     parser.add_argument('--nb_sample_gumbel', type=int, default=10, help='num of samples for gumbel softmax sampling')
     parser.add_argument('--temperature', type=float, default=0.25, help='temp coefficient for softmax')
     parser.add_argument('--reg_weight', type=float, default=0.1, help='weight for graph reg')
-
+    
     args = parser.parse_args()
     if not os.path.exists(f'{args.model_path}/{args.dataset}/{args.gnn_type}'):
         os.makedirs(f'{args.model_path}/{args.dataset}/{args.gnn_type}')
