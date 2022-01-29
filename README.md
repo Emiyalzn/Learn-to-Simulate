@@ -38,3 +38,29 @@ python render_rollout.py --rollout_path rollouts/Water/gcn/rollout_test_0.pkl
 If using `GAT` as our GNN backbone, we can get the following simulation effect on `Water`:
 
 ![results](results/rollout.gif)
+
+## Citation
+
+The original work was done by [DeepMind](https://github.com/deepmind/deepmind-research), published at ICML2020.
+
+```shell
+@article{DBLP:journals/corr/abs-2002-09405,
+  author    = {Alvaro Sanchez{-}Gonzalez and
+               Jonathan Godwin and
+               Tobias Pfaff and
+               Rex Ying and
+               Jure Leskovec and
+               Peter W. Battaglia},
+  title     = {Learning to Simulate Complex Physics with Graph Networks},
+  journal   = {CoRR},
+  volume    = {abs/2002.09405},
+  year      = {2020},
+  url       = {https://arxiv.org/abs/2002.09405},
+  eprinttype = {arXiv},
+  eprint    = {2002.09405},
+  timestamp = {Mon, 02 Mar 2020 16:46:06 +0100},
+  biburl    = {https://dblp.org/rec/journals/corr/abs-2002-09405.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+```
+
