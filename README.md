@@ -35,3 +35,6 @@ python main.py --mode eval_rollout --eval_split {split}
 python render_rollout.py --rollout_path rollouts/Water/gcn/rollout_test_0.pkl
 ```
 
+If using `GAT` as our GNN backbone, we can get the following simulation effect on `Water`:
+
+![results](results/rollout.gif)
