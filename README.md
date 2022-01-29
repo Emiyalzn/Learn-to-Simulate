@@ -41,7 +41,7 @@ If using `GAT` as our GNN backbone, we can get the following simulation effect o
 
 ## Citation
 
-The original work was done by [DeepMind](https://github.com/deepmind/deepmind-research), published at ICML2020.
+The original work was done by [DeepMind](https://github.com/deepmind/deepmind-research), written in TensorFlow and published at ICML2020.
 
 ```shell
 @article{DBLP:journals/corr/abs-2002-09405,
